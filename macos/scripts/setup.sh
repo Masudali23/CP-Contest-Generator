@@ -53,12 +53,29 @@ if ! command -v node >/dev/null 2>&1; then
     exit 1
 fi
 
-NODE_MAJOR="$(node --version | sed 's/^v//' | cut -d. -f1)"
-if [ "$NODE_MAJOR" -lt 20 ]; then
-    fail "Node.js $(node --version) found, but 20 or newer is required.  brew upgrade node"
+# Vite 8 and ESLint 10 require ^20.19 || >=22.12 - the whole 21.x line is
+# excluded, so a plain "major >= 20" check is not enough.
+NODE_VERSION="$(node --version | sed 's/^v//')"
+NODE_MAJOR="$(echo "$NODE_VERSION" | cut -d. -f1)"
+NODE_MINOR="$(echo "$NODE_VERSION" | cut -d. -f2)"
+
+node_supported() {
+    if [ "$NODE_MAJOR" -eq 20 ] && [ "$NODE_MINOR" -ge 19 ]; then return 0; fi
+    if [ "$NODE_MAJOR" -ge 22 ]; then return 0; fi
+    return 1
+}
+
+if ! node_supported; then
+    fail "Node.js v$NODE_VERSION is not supported. Need 20.19+ or 22.12+ (the 21.x line will not work)."
+    echo '    The backend runs on 21.x, but Vite crashes on it, so the frontend cannot build.'
+    echo '    Fix with Homebrew:'
+    echo '      brew install node@22'
+    echo '      brew link --overwrite --force node@22'
+    echo '    or with nvm:'
+    echo '      nvm install 22 && nvm use 22'
     exit 1
 fi
-ok "Node.js $(node --version), npm v$(npm --version)"
+ok "Node.js v$NODE_VERSION, npm v$(npm --version)"
 
 if command -v psql >/dev/null 2>&1; then
     ok "psql $(psql --version | awk '{print $3}')"
