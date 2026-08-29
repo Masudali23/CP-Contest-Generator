@@ -1,0 +1,21 @@
+{
+  "name": "cp-contest-generator-macos",
+  "version": "2.0.0",
+  "private": true,
+  "description": "CP Contest Generator - macOS edition. Homebrew-based setup for Apple silicon and Intel Macs.",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "setup": "bash scripts/setup.sh",
+    "dev": "bash scripts/dev.sh",
+    "doctor": "bash scripts/doctor.sh",
+    "services:start": "bash scripts/services.sh start",
+    "services:stop": "bash scripts/services.sh stop",
+    "db:init": "npm --prefix backend run db:init",
+    "build": "npm --prefix frontend run build",
+    "lint": "npm --prefix frontend run lint",
+    "start:backend": "npm --prefix backend start",
+    "start:frontend": "npm --prefix frontend run preview"
+  }
+}
