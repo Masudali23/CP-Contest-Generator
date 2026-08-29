@@ -83,6 +83,11 @@ Remove-Item Env:\DATABASE_URL
 ```
 
 You should see `Schema created / updated successfully.`
+> The `SECURITY WARNING` about SSL modes that `pg` prints is harmless. It says
+> `sslmode=require` currently gives full certificate verification and that a
+> future `pg` v9 will weaken it to match libpq. Use `sslmode=verify-full`
+> instead of `sslmode=require` to silence it, with identical behaviour today.
+
 
 > `$env:` only affects the current PowerShell window, and the last line clears it
 > again. The inline variable wins over anything in `.env`, because `dotenv` never

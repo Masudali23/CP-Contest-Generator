@@ -168,6 +168,65 @@ notepad backend\.env
 cd backend ; npm run db:init ; cd ..
 ```
 
+
+### Creating the database schema
+
+`npm run setup` does this for you against your local database. Run it by hand
+when you change databases — pointing at a hosted one, or recreating a dropped
+local one.
+
+Run it from `windows\backend`, with dependencies already installed:
+
+```powershell
+cd windows\backend
+npm install
+```
+
+Against the database in `backend\.env`:
+
+```powershell
+npm run db:init
+```
+
+Against a *different* database — a hosted one, say — without touching `.env`,
+set the variable for this window only:
+
+```powershell
+$env:DATABASE_URL = "postgresql://user:password@host.example.com/dbname?sslmode=require"
+npm run db:init
+Remove-Item Env:\DATABASE_URL
+```
+
+`$env:` affects only the current PowerShell window, and the last line clears it
+again. The inline value wins because `dotenv` never overwrites a variable that
+is already set, so your local configuration is left exactly as it was.
+
+`db:init` is idempotent — it creates missing tables, adds missing columns and
+creates missing indexes, so it is also the upgrade path for an existing
+database.
+
+> **You will see an SSL warning, and it is harmless.** With a Neon or Supabase
+> URL, `pg` prints:
+>
+> ```
+> Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca'
+> are treated as aliases for 'verify-full'.
+> ```
+>
+> It is telling you that `sslmode=require` currently gives you the *strongest*
+> behaviour (full certificate verification), and that a future `pg` v9 will make
+> it weaker to match libpq. Nothing is wrong, and the schema still applies. To
+> silence it, change `sslmode=require` to `sslmode=verify-full` in the URL you
+> pass — same behaviour today, and future-proof.
+>
+> Success is one line:
+>
+> ```
+> Schema created / updated successfully.
+> ```
+
+> **`Cannot find package 'dotenv'`** means you skipped `npm install`. `git pull`
+> does not install dependencies.
 ---
 
 ## Getting your API keys

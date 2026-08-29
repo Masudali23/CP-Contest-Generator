@@ -30,6 +30,8 @@ const env = {
 
     DATABASE_URL: process.env.DATABASE_URL,
     DATABASE_SSL: (process.env.DATABASE_SSL || "").toLowerCase() === "true",
+    // Opt out of certificate verification. Only for a self-signed server.
+    DATABASE_SSL_INSECURE: (process.env.DATABASE_SSL_INSECURE || "").toLowerCase() === "true",
 
     REDIS_URL: process.env.REDIS_URL || "",
 
