@@ -438,7 +438,12 @@ Something else is on 5173. Free it, or add the other origin to `CORS_ORIGIN`.
 Get-NetTCPConnection -LocalPort 8000 -State Listen |
   Select-Object OwningProcess |
   ForEach-Object { Get-Process -Id $_.OwningProcess }
-# then: Stop-Process -Id <pid>
+```
+
+Then stop the process it lists:
+
+```powershell
+Stop-Process -Id PID
 ```
 
 Or change `PORT` in `backend\.env` (and `VITE_API_URL` in `frontend\.env` to match).
