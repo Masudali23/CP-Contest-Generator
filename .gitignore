@@ -4,20 +4,24 @@ node_modules/
 # env files
 .env
 .env.*
+!.env.example
 
-# build files
+# build output
 dist/
 build/
 
-
 # logs
 *.log
+npm-debug.log*
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# vscode
+# editors
 .vscode/
+.idea/
 
+# scratch
+improvements.txt
 imporvements.txt

@@ -1,0 +1,32 @@
+{
+  "name": "cp-contest-generator-backend",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Express API for CP Contest Generator: Codeforces contest generation and AI performance reports.",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "db:init": "node scripts/initdb.js",
+    "doctor": "node scripts/checkenv.js"
+  },
+  "dependencies": {
+    "@google/genai": "^2.11.0",
+    "axios": "^1.18.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "googleapis": "^173.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.22.0",
+    "redis": "^6.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
