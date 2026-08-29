@@ -41,11 +41,21 @@ if (-not $node) {
     exit 1
 }
 
+# Vite 8 and ESLint 10 require ^20.19 || >=22.12 - the whole 21.x line is
+# excluded, so a plain "major -ge 20" check is not enough.
 $nodeVersion = (& node --version).TrimStart("v")
-$nodeMajor   = [int]($nodeVersion.Split(".")[0])
-if ($nodeMajor -lt 20) {
-    Write-Err "Node.js $nodeVersion found, but 20 or newer is required."
-    Write-Host "    winget install OpenJS.NodeJS.LTS"
+$nodeParts   = $nodeVersion.Split(".")
+$nodeMajor   = [int]$nodeParts[0]
+$nodeMinor   = [int]$nodeParts[1]
+
+$nodeSupported = ($nodeMajor -eq 20 -and $nodeMinor -ge 19) -or ($nodeMajor -ge 22)
+
+if (-not $nodeSupported) {
+    Write-Err "Node.js v$nodeVersion is not supported. Need 20.19+ or 22.12+ (the 21.x line will not work)."
+    Write-Host "    The backend runs on 21.x, but Vite crashes on it, so the frontend cannot build."
+    Write-Host "    Install a supported version:"
+    Write-Host "      winget install OpenJS.NodeJS.LTS"
+    Write-Host "    Then open a NEW terminal and run this script again."
     exit 1
 }
 Write-Ok "Node.js v$nodeVersion"

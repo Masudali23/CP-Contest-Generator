@@ -33,16 +33,24 @@ PostgreSQL install.
 |---|---|---|
 | **Windows** | 10 or 11 | — |
 | **PowerShell** | 5.1 (built in) or 7+ | Built in. `winget install Microsoft.PowerShell` for 7 |
-| **Node.js** | 20 LTS or newer | `winget install OpenJS.NodeJS.LTS` |
+| **Node.js** | **20.19+ or 22.12+** (not 21.x — see below) | `winget install OpenJS.NodeJS.LTS` |
 | **PostgreSQL** | 14 or newer | `winget install PostgreSQL.PostgreSQL.17` |
 | **Git** | any | `winget install Git.Git` |
 
 Open PowerShell and verify:
 
 ```powershell
-node --version    # v20.x or newer
+node --version    # must be 20.19+ or 22.12+, NOT 21.x
 npm --version
 ```
+
+> **Node 21 does not work.** Vite 8 and ESLint 10 declare
+> `^20.19.0 || >=22.12.0`, which excludes the whole 21.x line. The backend runs
+> fine on 21, so `npm run db:init` and `npm start` will succeed — but `npm run
+> dev` and `npm run build` crash inside Vite's bundler. If `node --version`
+> reports 21.x, install the LTS build with
+> `winget install OpenJS.NodeJS.LTS` and open a new terminal. `npm run setup`
+> checks this and refuses to continue on an unsupported version.
 
 > **After any `winget install`, open a new terminal** so the updated `PATH` is
 > picked up.
@@ -391,6 +399,16 @@ All routes except `/`, `/health`, `/user/topics` and the OAuth endpoints need a
 ---
 
 ## Troubleshooting
+
+**`Cannot find package 'dotenv'` (or any other package)**
+Dependencies are not installed yet. Run `npm install` in the folder you are in
+(`windows\backend` or `windows\frontend`), or `npm run setup` from `windows\` to
+do both.
+
+**Vite crashes with `ERR_INVALID_ARG_VALUE` or `Cannot find native binding`**
+You are on Node 21.x, which Vite 8 does not support. Check with `node --version`
+and install the LTS build with `winget install OpenJS.NodeJS.LTS`, then open a
+new terminal.
 
 **`npm run setup` says scripts are disabled**
 The npm scripts pass `-ExecutionPolicy Bypass`, so this only affects running

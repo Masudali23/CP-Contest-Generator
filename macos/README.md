@@ -28,7 +28,7 @@ they run on a stock system with nothing extra installed.
 |---|---|---|
 | **macOS** | 12 Monterey or newer | — |
 | **Homebrew** | latest | see below |
-| **Node.js** | 20 LTS or newer | `brew install node` |
+| **Node.js** | **20.19+ or 22.12+** (not 21.x — see below) | `brew install node@22` |
 | **PostgreSQL** | 14 or newer | `brew install postgresql@16` |
 | **Redis** | optional | `brew install redis` |
 | **Git** | any | `brew install git` (or Xcode Command Line Tools) |
@@ -71,10 +71,24 @@ exec $SHELL -l
 Verify and create the database:
 
 ```bash
-node --version         # v20.x or newer
+node --version         # must be 20.19+ or 22.12+, NOT 21.x
 psql --version
 createdb cp_contest
 ```
+
+> **Node 21 does not work.** Vite 8 and ESLint 10 declare
+> `^20.19.0 || >=22.12.0`, which excludes the whole 21.x line. The backend runs
+> fine on 21, so `npm run db:init` and `npm start` will succeed — but `npm run
+> dev` and `npm run build` crash inside Vite's bundler. If `node --version`
+> reports 21.x:
+>
+> ```bash
+> brew install node@22
+> brew link --overwrite --force node@22
+> ```
+>
+> or, if you use nvm: `nvm install 22 && nvm use 22`. `npm run setup` checks this
+> and refuses to continue on an unsupported version.
 
 Homebrew's PostgreSQL creates a superuser named after your macOS account and
 trusts local connections, so no password is needed:
@@ -383,6 +397,19 @@ All routes except `/`, `/health`, `/user/topics` and the OAuth endpoints need a
 ---
 
 ## Troubleshooting
+
+**`Cannot find package 'dotenv'` (or any other package)**
+Dependencies are not installed yet. Run `npm install` in the folder you are in
+(`macos/backend` or `macos/frontend`), or `npm run setup` from `macos/` to do both.
+
+**Vite crashes with `ERR_INVALID_ARG_VALUE` or `Cannot find native binding`**
+You are on Node 21.x, which Vite 8 does not support. Check with `node --version`
+and switch to 20.19+ or 22.12+:
+
+```bash
+brew install node@22
+brew link --overwrite --force node@22
+```
 
 **`brew: command not found`**
 Homebrew is installed but not on `PATH`. On Apple silicon:
