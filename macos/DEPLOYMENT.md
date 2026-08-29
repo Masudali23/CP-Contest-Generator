@@ -81,6 +81,11 @@ DATABASE_URL='postgresql://neondb_owner:PASSWORD@ep-cool-name-12345.us-east-2.aw
 ```
 
 You should see `Schema created / updated successfully.`
+> The `SECURITY WARNING` about SSL modes that `pg` prints is harmless. It says
+> `sslmode=require` currently gives full certificate verification and that a
+> future `pg` v9 will weaken it to match libpq. Use `sslmode=verify-full`
+> instead of `sslmode=require` to silence it, with identical behaviour today.
+
 
 > **Keep the single quotes.** Neon passwords contain characters your shell would
 > otherwise interpret. And do not paste the two lines above as one block — run

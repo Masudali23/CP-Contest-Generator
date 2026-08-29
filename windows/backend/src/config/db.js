@@ -4,15 +4,34 @@ import env from "./env.js";
 const { Pool } = pg;
 
 /*
- * Managed Postgres (Neon, Supabase, Render) terminates TLS with a certificate
- * chain Node does not ship, so rejectUnauthorized has to be relaxed there.
- * Local Postgres on Windows/macOS runs without SSL.
+ * TLS.
+ *
+ * When DATABASE_URL carries an `sslmode=` parameter, pg parses it and that
+ * setting wins outright - anything passed as `ssl` here is ignored. So for a
+ * Neon/Supabase URL ending in `?sslmode=require`, the certificate is fully
+ * verified and none of the logic below applies.
+ *
+ * The `ssl` option only takes effect when the URL has no `sslmode`, i.e. when
+ * TLS was requested through DATABASE_SSL=true. Verify the certificate there
+ * too: Neon, Supabase, Render and Aiven all present publicly trusted chains.
+ * DATABASE_SSL_INSECURE=true is the escape hatch for a self-signed server, and
+ * it warns loudly, because it disables the check that stops an attacker
+ * impersonating your database.
  */
-const needsSsl = env.DATABASE_SSL || /\bsslmode=require\b/.test(env.DATABASE_URL || "");
+const urlHasSslMode = /[?&]sslmode=/.test(env.DATABASE_URL || "");
+const needsSsl = env.DATABASE_SSL || urlHasSslMode;
+
+if (env.DATABASE_SSL_INSECURE) {
+    console.warn(
+        "DATABASE_SSL_INSECURE=true - the database certificate will NOT be verified. Use this only for a self-signed server you control."
+    );
+}
+
+const sslConfig = needsSsl ? (env.DATABASE_SSL_INSECURE ? { rejectUnauthorized: false } : true) : false;
 
 const pool = new Pool({
     connectionString: env.DATABASE_URL,
-    ssl: needsSsl ? { rejectUnauthorized: false } : false,
+    ssl: sslConfig,
     max: 10,
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis: 10_000,
