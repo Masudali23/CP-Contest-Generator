@@ -1,0 +1,33 @@
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    picture TEXT,
+    handle VARCHAR(100) UNIQUE,
+    rating INTEGER,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS contests (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    duration INTEGER NOT NULL,
+    difficulty VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ended_at TIMESTAMP,
+    is_ended BOOLEAN NOT NULL DEFAULT FALSE
+);
+CREATE TABLE IF NOT EXISTS contest_problems (
+    id SERIAL PRIMARY KEY,
+    contest_id INTEGER NOT NULL REFERENCES contests(id) ON DELETE CASCADE,
+    contest_id_cf INTEGER NOT NULL,
+    problem_index VARCHAR(10) NOT NULL,
+    problem_name VARCHAR(255) NOT NULL,
+    rating INTEGER NOT NULL,
+    position INTEGER NOT NULL
+);
+CREATE TABLE contest_reports (
+    id SERIAL PRIMARY KEY,
+    contest_id INTEGER UNIQUE REFERENCES contests(id) ON DELETE CASCADE,
+    report JSONB NOT NULL,
+    generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
