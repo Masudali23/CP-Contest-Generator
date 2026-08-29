@@ -1,0 +1,2 @@
+# CP-Contest-Generator
+CP
