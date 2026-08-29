@@ -436,7 +436,12 @@ moving to 5174.
 
 ```bash
 lsof -nP -iTCP:8000 -sTCP:LISTEN
-kill -9 <pid>
+```
+
+Then kill the PID that command prints:
+
+```bash
+kill -9 PID
 ```
 
 Or change `PORT` in `backend/.env` (and `VITE_API_URL` in `frontend/.env` to match).

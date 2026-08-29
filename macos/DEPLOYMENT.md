@@ -66,19 +66,29 @@ then come back and fix it in [Step 5](#step-5--close-the-loop).
 
 ### Creating the schema
 
-Point your **local** backend at the hosted database once and run the schema:
+Run the schema against the hosted database once, passing the connection string
+on the command line. Nothing in `backend/.env` is read or changed, so your local
+setup keeps working:
 
 ```bash
-# In macos/backend/.env, temporarily set:
-#   DATABASE_URL=<your Neon connection string>
-#   DATABASE_SSL=true
-
 cd macos/backend
-npm run db:init
 ```
 
-You should see `Schema created / updated successfully.` Then restore your local
-`DATABASE_URL`.
+Then run this, with your own connection string in the quotes:
+
+```bash
+DATABASE_URL='postgresql://neondb_owner:PASSWORD@ep-cool-name-12345.us-east-2.aws.neon.tech/neondb?sslmode=require' npm run db:init
+```
+
+You should see `Schema created / updated successfully.`
+
+> **Keep the single quotes.** Neon passwords contain characters your shell would
+> otherwise interpret. And do not paste the two lines above as one block — run
+> the `cd` first, then the command.
+
+> The inline variable wins over anything in `.env`, because `dotenv` never
+> overwrites a variable that is already set. `DATABASE_SSL` is not needed here:
+> the `sslmode=require` in Neon's own connection string already switches TLS on.
 
 > `db:init` is idempotent, so you can also add it to the Render build command
 > (`npm install && npm run db:init`) to keep the schema in sync on every deploy.
